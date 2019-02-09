@@ -1,0 +1,135 @@
+cmd (Administrador)
+
+Primero instalar webpack a nivel global
+    npm i -g webpack
+    y
+    npm i -g webpack-cli
+
+Luego mientras se instala a nivel global, creamos un proyecto
+    npm init --yes
+
+Seguimos ahora instalando webpack en nustro proyecto
+    npm install webpack --save-dev
+
+Ahora creamos dist/index.html con estructura html y con:
+    <script src="main.js"></script>
+
+Por otro lado src/app.js (con un import './css/style.css'; y alert("Hola Mundo"))
+
+Y ahora le decimos a webpack (global) cual será la entrada(lo q escribo) y generará la salida dist/main.js
+    webpack app.js --mode=development // ó --mode=production que es mininizado
+    
+    A esto mismo se lo puede poner en la parte de "scritps" de package.json:
+        "scripts": {
+            "dev": "webpack app.js --mode=development",
+            "prod": "webpack app.js --mode=production",
+            "test": "echo \"Error: no test specified\" && exit 1"
+        },
+    Y correrlo como 
+        npm run dev
+
+OOOOOO
+
+se crea un archivo llamado  y adentro las configuraciones:
+    var path = require('path');
+
+    module.exports = {
+        mode: 'development',
+        entry: './src/app.js',
+        output: {
+            path: path.resolve(__dirname, 'dist'),
+            filename: 'main.js'
+        }
+    };
+
+en "scripts":
+    "scripts": {
+        "build": "webpack",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+
+Y generará el mismo resultado ;)
+
+
+----------------------------------------------------------
+LISTO JS TO BUNDLE
+----------------------------------------------------------
+Creamos el css en src/css/style.css y le agregamos color al background
+
+Ahora para el css y typescript usamos los loaders:
+
+    npm install --save-dev style-loader
+    npm install --save-dev css-loader
+
+y agregamos en el webpack.config.js:
+
+    module: {
+        rules: [
+            {
+                test: /*\.css$/,
+                use: [
+                    { loader: "style-loader" },
+                    { loader: "css-loader" }
+                ]
+            }
+        ]
+    }
+
+--------------------------------------------------------
+LISTO CSS AHORA SOLO FALTA EL SERVER
+--------------------------------------------------------
+
+Se agrega la libreria 
+    npm i --save-dev webpack-dev-server
+
+y luego se agrega la configuracion en webpack.config.js
+    devServer: {
+        contentBase: path.join(__dirname, 'dist'),
+        compress: true,
+        port: 8081
+    },
+
+Finalmente se carga el script para levartar el server en el package.json
+    "scripts": {
+        "build": "webpack",
+        "server": "webpack-dev-server",
+        "dev": "webpack app.js --mode=development",
+        "prod": "webpack app.js --mode=production",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+
+
+-------------------------------------------------------
+AHORA VAMOS CON BABEL PARA COMPATIBILIZAR ES6 y JSX
+-------------------------------------------------------
+
+Instalar BABEL
+    npm i @babel/core babel-loader @babel/preset-env @babel/preset-react --save-dev
+
+Configuramos babel agregando archivo .babelrc con lo siguiente:
+    {
+        "presets": ["@babel/preset-env", "@babel/preset-react"]
+    }
+
+Ahora agregamos a la configuración de webpack
+    rules: [
+        {
+            test: /\.(js|jsx)$/,
+            exclude: /node_modules/,
+            use: {
+                loader: "babel-loader"
+            }
+        }
+    ]
+
+Con esto para cada archivo con una extensión js o jsx, 
+Webpack canaliza el código a través de babel-loader para transformar ES6 en ES5.
+
+-----------------------------------------------------------
+LISTO AHORA HACEMOS ANDAR REACT 
+-----------------------------------------------------------
+
+Instalamos las dependencias de REACT
+    npm i react react-dom --save-dev
+
+Y seguimso lo siguiente https://www.valentinog.com/blog/react-webpack-babel/
